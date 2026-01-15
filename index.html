@@ -149,7 +149,7 @@ const SourceFooter = ({ source, period }) => (
 
 const SectionIntro = ({ title, icon: Icon, children, expertNote, interactiveType }) => (
   <div className="mb-6 w-full">
-    <div className="bg-white p-4 md:p-5 rounded-lg border-l-4 border-indigo-500 shadow-sm w-full box-border">
+    <div className="bg-white p-4 md:p-5 rounded-lg border-l-4 border-indigo-500 shadow-sm w-full">
       <div className="flex flex-wrap items-center gap-2 mb-3">
         <h2 className="text-lg md:text-xl font-bold text-slate-800 flex items-center gap-2">
           <Icon className="w-5 h-5 md:w-6 md:h-6 text-indigo-600 flex-shrink-0" />
@@ -174,7 +174,7 @@ const SectionIntro = ({ title, icon: Icon, children, expertNote, interactiveType
 );
 
 const MainCard = ({ title, value, icon: Icon, subtext, tooltip }) => (
-  <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100 flex flex-col justify-between h-full relative group hover:shadow-md transition-shadow overflow-hidden w-full box-border">
+  <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100 flex flex-col justify-between h-full relative group hover:shadow-md transition-shadow overflow-hidden w-full">
     <div className="flex items-start justify-between w-full">
       <div className="p-3 bg-indigo-50 rounded-lg shrink-0">
         <Icon className="w-5 h-5 md:w-6 md:h-6 text-indigo-600" />
@@ -182,7 +182,6 @@ const MainCard = ({ title, value, icon: Icon, subtext, tooltip }) => (
       {tooltip && (
         <div className="relative group/tooltip ml-2">
           <HelpCircle className="w-4 h-4 text-slate-300 cursor-help" />
-          {/* Tooltip com posicionamento fixo para evitar cortes */}
           <div className="absolute top-8 right-0 w-48 bg-slate-800 text-white text-[10px] p-3 rounded-lg hidden group-hover/block z-50 shadow-xl pointer-events-none leading-relaxed text-left">
             {tooltip}
           </div>
@@ -259,6 +258,7 @@ const BusinessSimulator = () => {
   const paybackMonths = netProfit > 0 ? totalCapex / netProfit : 0;
   const paybackYears = paybackMonths / 12;
 
+  // Gráfico do Simulador
   const simulatorData = [
     { name: 'Receita Bruta', value: grossRevenue, color: '#22c55e' }, 
     { name: 'Custo Variável', value: variableCost, color: '#f59e0b' }, 
@@ -267,7 +267,7 @@ const BusinessSimulator = () => {
   ];
 
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-indigo-100 overflow-hidden mt-8 w-full box-border">
+    <div className="bg-white rounded-xl shadow-lg border border-indigo-100 overflow-hidden mt-8 w-full max-w-full">
       <div className="bg-indigo-900 text-white p-5 flex items-center justify-between flex-wrap gap-2">
         <div>
           <h3 className="text-lg font-bold flex items-center gap-2">
@@ -292,13 +292,13 @@ const BusinessSimulator = () => {
         </button>
       </div>
 
-      <div className="p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-8 w-full box-border">
+      <div className="p-4 md:p-6 grid grid-cols-1 lg:grid-cols-2 gap-8 w-full">
         
         {/* COLUNA ESQUERDA: INPUTS */}
-        <div className="space-y-6 w-full">
+        <div className="space-y-6 w-full min-w-0">
           
           {/* CAPEX */}
-          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 group focus-within:ring-2 focus-within:ring-indigo-500 transition-all w-full box-border">
+          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 w-full">
             <div className="flex justify-between items-center mb-3">
               <div className="flex items-center gap-2">
                 <Target className="w-4 h-4 text-indigo-600" />
@@ -306,22 +306,21 @@ const BusinessSimulator = () => {
               </div>
               <button type="button" onClick={() => addItem(setCapexItems, capexItems)} className="p-1 bg-white hover:bg-indigo-50 border border-slate-200 rounded-full text-indigo-600 shadow-sm" title="Adicionar Linha"><Plus className="w-4 h-4" /></button>
             </div>
-            <div className="space-y-2 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
+            {/* Scroll lateral interno se necessário para inputs muito longos em telas minúsculas */}
+            <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
               {capexItems.map((item) => (
                 <div key={item.id} className="flex gap-2 items-center text-xs w-full">
                   <div className="flex-1 relative min-w-0">
                     <Edit3 className="w-3 h-3 text-slate-300 absolute left-2 top-2.5" />
-                    {/* Inputs com fonte base (16px) em mobile para evitar zoom, ajustado via CSS se necessário, mas aqui usando text-base */}
                     <input 
                       type="text" 
                       value={item.name} 
                       onChange={(e) => updateItem(setCapexItems, capexItems, item.id, 'name', e.target.value)}
-                      className="w-full border border-slate-300 rounded pl-7 pr-2 py-2 text-base sm:text-xs focus:ring-1 focus:ring-indigo-500 outline-none min-w-0 bg-white"
+                      className="w-full border border-slate-300 rounded pl-7 pr-2 py-2 text-base sm:text-xs focus:ring-1 focus:ring-indigo-500 outline-none bg-white min-w-0"
                       placeholder="Nome do Item"
                     />
                   </div>
-                  {/* Largura ajustada para mobile (w-24) */}
-                  <div className="relative w-24 sm:w-28 shrink-0">
+                  <div className="relative w-24 shrink-0">
                     <span className="absolute left-2 top-2 text-slate-400">R$</span>
                     <input 
                       type="number" 
@@ -340,7 +339,7 @@ const BusinessSimulator = () => {
           </div>
 
           {/* OPEX */}
-          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 group focus-within:ring-2 focus-within:ring-indigo-500 transition-all w-full box-border">
+          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 w-full">
              <div className="flex justify-between items-center mb-3">
               <div className="flex items-center gap-2">
                 <RefreshCw className="w-4 h-4 text-orange-600" />
@@ -348,7 +347,7 @@ const BusinessSimulator = () => {
               </div>
               <button type="button" onClick={() => addItem(setOpexItems, opexItems)} className="p-1 bg-white hover:bg-indigo-50 border border-slate-200 rounded-full text-indigo-600 shadow-sm" title="Adicionar Linha"><Plus className="w-4 h-4" /></button>
             </div>
-            <div className="space-y-2 max-h-40 overflow-y-auto pr-1 custom-scrollbar">
+            <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
               {opexItems.map((item) => (
                 <div key={item.id} className="flex gap-2 items-center text-xs w-full">
                    <div className="flex-1 relative min-w-0">
@@ -357,11 +356,11 @@ const BusinessSimulator = () => {
                       type="text" 
                       value={item.name} 
                       onChange={(e) => updateItem(setOpexItems, opexItems, item.id, 'name', e.target.value)}
-                      className="w-full border border-slate-300 rounded pl-7 pr-2 py-2 text-base sm:text-xs focus:ring-1 focus:ring-indigo-500 outline-none min-w-0 bg-white"
+                      className="w-full border border-slate-300 rounded pl-7 pr-2 py-2 text-base sm:text-xs focus:ring-1 focus:ring-indigo-500 outline-none bg-white min-w-0"
                       placeholder="Nome do Item"
                     />
                   </div>
-                  <div className="relative w-24 sm:w-28 shrink-0">
+                  <div className="relative w-24 shrink-0">
                     <span className="absolute left-2 top-2 text-slate-400">R$</span>
                     <input 
                       type="number" 
@@ -377,7 +376,7 @@ const BusinessSimulator = () => {
           </div>
 
           {/* VARIÁVEIS DE VENDA */}
-          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 group focus-within:ring-2 focus-within:ring-indigo-500 transition-all w-full box-border">
+          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 w-full">
              <div className="flex items-center gap-2 mb-3">
                 <TrendingUp className="w-4 h-4 text-green-600" />
                 <h4 className="text-sm font-bold text-slate-700 uppercase">Projeção de Vendas</h4>
@@ -425,29 +424,33 @@ const BusinessSimulator = () => {
         </div>
 
         {/* COLUNA DIREITA: RESULTADOS */}
-        <div className="flex flex-col h-full bg-slate-50 rounded-xl border border-slate-200 p-4 md:p-6 w-full box-border">
+        <div className="flex flex-col h-full bg-slate-50 rounded-xl border border-slate-200 p-4 md:p-6 w-full min-w-0">
           <h4 className="text-sm font-bold text-slate-800 uppercase mb-4 flex items-center gap-2">
             <DollarSign className="w-4 h-4 text-emerald-600" />
             Demonstrativo de Resultados (DRE)
           </h4>
 
-          {/* Gráfico Simplificado com altura FIXA para evitar colapso */}
-          <div className="h-48 min-h-[200px] w-full mb-6 relative">
-            {/* Width 99% hack para Recharts e Absolute Positioning para fixar */}
-            <div className="absolute inset-0">
-                <ResponsiveContainer width="99%" height="100%">
+          {/* Gráfico Simplificado com Container Robusto */}
+          <div className="w-full mb-6">
+            <div className="h-[200px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={simulatorData} layout="vertical" margin={{top: 0, right: 10, left: 10, bottom: 0}}>
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                    <XAxis type="number" hide />
-                    <YAxis dataKey="name" type="category" width={85} tick={{fontSize: 10}} />
-                    <RechartsTooltip cursor={{fill: 'transparent'}} formatter={(val) => formatCurrency(val)} contentStyle={{ zIndex: 9999 }} wrapperStyle={{ outline: 'none', zIndex: 9999 }} />
-                    <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={24}>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                  <XAxis type="number" hide />
+                  <YAxis dataKey="name" type="category" width={85} tick={{fontSize: 10}} />
+                  <RechartsTooltip 
+                    cursor={{fill: 'transparent'}} 
+                    formatter={(val) => formatCurrency(val)} 
+                    contentStyle={{ zIndex: 1000 }} 
+                    wrapperStyle={{ zIndex: 1000 }}
+                  />
+                  <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={24}>
                     {simulatorData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
-                    </Bar>
+                  </Bar>
                 </BarChart>
-                </ResponsiveContainer>
+              </ResponsiveContainer>
             </div>
           </div>
 
@@ -521,12 +524,11 @@ export default function RioVerdeMarketApp() {
     : ZONES.filter(z => z.class.includes(filterClass));
 
   return (
-    // Container Principal: Overflow-x-hidden previne scroll horizontal em mobile
-    // max-w-[100vw] é crítico para evitar overflow no GitHub Pages/Mobile
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans pb-8 md:pb-12 w-full max-w-[100vw] overflow-x-hidden box-border">
+    // Container Principal: min-w-0 e overflow-x-hidden no body/root
+    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans pb-8 md:pb-12 w-full overflow-x-hidden">
       
       {/* HEADER */}
-      <header className="bg-gradient-to-r from-indigo-900 to-blue-900 text-white p-5 md:p-8 shadow-xl w-full box-border">
+      <header className="bg-gradient-to-r from-indigo-900 to-blue-900 text-white p-5 md:p-8 shadow-xl w-full">
         <div className="max-w-7xl mx-auto w-full">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div className="w-full md:w-auto">
@@ -558,7 +560,7 @@ export default function RioVerdeMarketApp() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto p-4 md:p-8 space-y-8 md:space-y-12 w-full box-border">
+      <main className="max-w-7xl mx-auto p-4 md:p-8 space-y-8 md:space-y-12 w-full">
         
         {/* SEÇÃO 1: MACRO */}
         <section className="w-full">
@@ -576,7 +578,7 @@ export default function RioVerdeMarketApp() {
             </p>
           </SectionIntro>
           
-          <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 w-full box-border">
+          <div className="bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 w-full">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
               <MainCard 
                 title="População (Censo 22)" 
@@ -631,7 +633,7 @@ export default function RioVerdeMarketApp() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 w-full">
             {/* ESQUERDA: MAPA LÓGICO */}
-            <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col order-2 lg:order-1 w-full box-border">
+            <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col order-2 lg:order-1 w-full min-w-0">
               <div className="p-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <span className="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center gap-2">
                    Selecione a Zona <MousePointerClick className="w-3 h-3 text-indigo-400" />
@@ -687,7 +689,7 @@ export default function RioVerdeMarketApp() {
             </div>
 
             {/* DIREITA: PAINEL DE DETALHES (Fixo em desktop, scroll em mobile) */}
-            <div className="bg-white rounded-xl shadow-lg border border-indigo-100 p-5 md:p-6 flex flex-col relative overflow-hidden h-full order-1 lg:order-2 w-full box-border">
+            <div className="bg-white rounded-xl shadow-lg border border-indigo-100 p-5 md:p-6 flex flex-col relative overflow-hidden h-full order-1 lg:order-2 w-full min-w-0">
               <div className={`absolute top-0 left-0 w-full h-1.5 ${activeZone.color}`} />
               
               <div className="mb-6">
@@ -746,7 +748,7 @@ export default function RioVerdeMarketApp() {
         </section>
 
         {/* SEÇÃO 3: SAZONALIDADE */}
-        <section className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 md:p-6 mb-8 w-full box-border">
+        <section className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 md:p-6 mb-8 w-full">
           <SectionIntro 
             title="Sazonalidade Financeira (Calendário Safra)" 
             icon={Calendar}
@@ -758,10 +760,10 @@ export default function RioVerdeMarketApp() {
             </p>
           </SectionIntro>
 
-          {/* Container do Gráfico com altura FIXA e width 99% para evitar bugs de resize */}
-          <div className="h-[300px] min-h-[300px] w-full mt-6 relative">
-            <div className="absolute inset-0">
-                <ResponsiveContainer width="99%" height="100%">
+          {/* Container do Gráfico com altura FIXA e wrapper div para isolar contexto */}
+          <div className="w-full mt-6">
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={SEASONALITY_DATA} margin={{ top: 5, right: 10, bottom: 5, left: -20 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                     <XAxis 
@@ -788,7 +790,7 @@ export default function RioVerdeMarketApp() {
                     activeDot={{ r: 6 }}
                     />
                 </LineChart>
-                </ResponsiveContainer>
+              </ResponsiveContainer>
             </div>
           </div>
 
