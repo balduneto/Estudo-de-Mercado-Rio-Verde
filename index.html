@@ -149,7 +149,7 @@ const SourceFooter = ({ source, period }) => (
 
 const SectionIntro = ({ title, icon: Icon, children, expertNote, interactiveType }) => (
   <div className="mb-6 w-full">
-    <div className="bg-white p-4 md:p-5 rounded-lg border-l-4 border-indigo-500 shadow-sm w-full">
+    <div className="bg-white p-4 md:p-5 rounded-lg border-l-4 border-indigo-500 shadow-sm w-full box-border">
       <div className="flex flex-wrap items-center gap-2 mb-3">
         <h2 className="text-lg md:text-xl font-bold text-slate-800 flex items-center gap-2">
           <Icon className="w-5 h-5 md:w-6 md:h-6 text-indigo-600 flex-shrink-0" />
@@ -182,6 +182,7 @@ const MainCard = ({ title, value, icon: Icon, subtext, tooltip }) => (
       {tooltip && (
         <div className="relative group/tooltip ml-2">
           <HelpCircle className="w-4 h-4 text-slate-300 cursor-help" />
+          {/* Tooltip com posicionamento fixo para evitar cortes */}
           <div className="absolute top-8 right-0 w-48 bg-slate-800 text-white text-[10px] p-3 rounded-lg hidden group-hover/block z-50 shadow-xl pointer-events-none leading-relaxed text-left">
             {tooltip}
           </div>
@@ -212,6 +213,7 @@ const ProgressBar = ({ label, value, colorClass }) => (
  * --- SIMULADOR COMPONENT ---
  */
 const BusinessSimulator = () => {
+  const [isMounted, setIsMounted] = useState(false);
   const [capexItems, setCapexItems] = useState([
     { id: 1, name: 'Reforma / Ponto Comercial', value: 25000 },
     { id: 2, name: 'Estoque Inicial (Mix)', value: 40000 },
@@ -231,6 +233,10 @@ const BusinessSimulator = () => {
     volume: 60, 
     variableCostPct: 45 
   });
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
   
@@ -312,15 +318,17 @@ const BusinessSimulator = () => {
                 <div key={item.id} className="flex gap-2 items-center text-xs w-full">
                   <div className="flex-1 relative min-w-0">
                     <Edit3 className="w-3 h-3 text-slate-300 absolute left-2 top-2.5" />
+                    {/* Inputs com fonte base (16px) em mobile para evitar zoom */}
                     <input 
                       type="text" 
                       value={item.name} 
                       onChange={(e) => updateItem(setCapexItems, capexItems, item.id, 'name', e.target.value)}
-                      className="w-full border border-slate-300 rounded pl-7 pr-2 py-2 text-base sm:text-xs focus:ring-1 focus:ring-indigo-500 outline-none bg-white min-w-0"
+                      className="w-full border border-slate-300 rounded pl-7 pr-2 py-2 text-base sm:text-xs focus:ring-1 focus:ring-indigo-500 outline-none min-w-0 bg-white"
                       placeholder="Nome do Item"
                     />
                   </div>
-                  <div className="relative w-24 shrink-0">
+                  {/* Largura ajustada para mobile (w-24) */}
+                  <div className="relative w-24 sm:w-28 shrink-0">
                     <span className="absolute left-2 top-2 text-slate-400">R$</span>
                     <input 
                       type="number" 
@@ -356,11 +364,11 @@ const BusinessSimulator = () => {
                       type="text" 
                       value={item.name} 
                       onChange={(e) => updateItem(setOpexItems, opexItems, item.id, 'name', e.target.value)}
-                      className="w-full border border-slate-300 rounded pl-7 pr-2 py-2 text-base sm:text-xs focus:ring-1 focus:ring-indigo-500 outline-none bg-white min-w-0"
+                      className="w-full border border-slate-300 rounded pl-7 pr-2 py-2 text-base sm:text-xs focus:ring-1 focus:ring-indigo-500 outline-none min-w-0 bg-white"
                       placeholder="Nome do Item"
                     />
                   </div>
-                  <div className="relative w-24 shrink-0">
+                  <div className="relative w-24 sm:w-28 shrink-0">
                     <span className="absolute left-2 top-2 text-slate-400">R$</span>
                     <input 
                       type="number" 
@@ -432,25 +440,28 @@ const BusinessSimulator = () => {
 
           {/* Gráfico Simplificado com Container Robusto */}
           <div className="w-full mb-6">
-            <div className="h-[200px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={simulatorData} layout="vertical" margin={{top: 0, right: 10, left: 10, bottom: 0}}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                  <XAxis type="number" hide />
-                  <YAxis dataKey="name" type="category" width={85} tick={{fontSize: 10}} />
-                  <RechartsTooltip 
-                    cursor={{fill: 'transparent'}} 
-                    formatter={(val) => formatCurrency(val)} 
-                    contentStyle={{ zIndex: 1000 }} 
-                    wrapperStyle={{ zIndex: 1000 }}
-                  />
-                  <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={24}>
-                    {simulatorData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+            <div className="h-[250px] w-full relative">
+              {/* Check de montagem para evitar erros de renderização no build estático */}
+              {isMounted && (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={simulatorData} layout="vertical" margin={{top: 0, right: 10, left: 10, bottom: 0}}>
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                    <XAxis type="number" hide />
+                    <YAxis dataKey="name" type="category" width={85} tick={{fontSize: 10}} />
+                    <RechartsTooltip 
+                      cursor={{fill: 'transparent'}} 
+                      formatter={(val) => formatCurrency(val)} 
+                      contentStyle={{ zIndex: 9999 }} 
+                      wrapperStyle={{ zIndex: 9999 }}
+                    />
+                    <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={24}>
+                      {simulatorData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
             </div>
           </div>
 
@@ -518,13 +529,19 @@ const BusinessSimulator = () => {
 export default function RioVerdeMarketApp() {
   const [activeZone, setActiveZone] = useState(ZONES[0]);
   const [filterClass, setFilterClass] = useState('all');
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const filteredZones = filterClass === 'all' 
     ? ZONES 
     : ZONES.filter(z => z.class.includes(filterClass));
 
   return (
-    // Container Principal: min-w-0 e overflow-x-hidden no body/root
+    // Container Principal: Overflow-x-hidden previne scroll horizontal em mobile
+    // max-w-full e w-full garantem que o app respeite os limites da tela
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans pb-8 md:pb-12 w-full overflow-x-hidden">
       
       {/* HEADER */}
@@ -748,7 +765,7 @@ export default function RioVerdeMarketApp() {
         </section>
 
         {/* SEÇÃO 3: SAZONALIDADE */}
-        <section className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 md:p-6 mb-8 w-full">
+        <section className="bg-white rounded-xl shadow-sm border border-slate-200 p-4 md:p-6 mb-8 w-full box-border">
           <SectionIntro 
             title="Sazonalidade Financeira (Calendário Safra)" 
             icon={Calendar}
@@ -762,35 +779,37 @@ export default function RioVerdeMarketApp() {
 
           {/* Container do Gráfico com altura FIXA e wrapper div para isolar contexto */}
           <div className="w-full mt-6">
-            <div className="h-[300px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={SEASONALITY_DATA} margin={{ top: 5, right: 10, bottom: 5, left: -20 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                    <XAxis 
-                    dataKey="month" 
-                    axisLine={false} 
-                    tickLine={false} 
-                    tick={{fill: '#64748b', fontSize: 10}} 
-                    interval="preserveStartEnd"
-                    />
-                    <YAxis hide />
-                    <RechartsTooltip 
-                    contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px', zIndex: 1000 }}
-                    labelStyle={{ color: '#1e293b', fontWeight: 'bold' }}
-                    wrapperStyle={{ outline: 'none', zIndex: 1000 }}
-                    />
-                    <Legend verticalAlign="top" height={36} iconType="circle" />
-                    <Line 
-                    type="monotone" 
-                    dataKey="cashflow" 
-                    name="Liquidez (Entrada de R$)"
-                    stroke="#22c55e" 
-                    strokeWidth={3} 
-                    dot={{ r: 3, fill: '#22c55e' }}
-                    activeDot={{ r: 6 }}
-                    />
-                </LineChart>
-              </ResponsiveContainer>
+            <div className="h-[300px] w-full relative">
+                {isMounted && (
+                    <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={SEASONALITY_DATA} margin={{ top: 5, right: 10, bottom: 5, left: -20 }}>
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                        <XAxis 
+                        dataKey="month" 
+                        axisLine={false} 
+                        tickLine={false} 
+                        tick={{fill: '#64748b', fontSize: 10}} 
+                        interval="preserveStartEnd"
+                        />
+                        <YAxis hide />
+                        <RechartsTooltip 
+                        contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px', zIndex: 1000 }}
+                        labelStyle={{ color: '#1e293b', fontWeight: 'bold' }}
+                        wrapperStyle={{ outline: 'none', zIndex: 1000 }}
+                        />
+                        <Legend verticalAlign="top" height={36} iconType="circle" />
+                        <Line 
+                        type="monotone" 
+                        dataKey="cashflow" 
+                        name="Liquidez (Entrada de R$)"
+                        stroke="#22c55e" 
+                        strokeWidth={3} 
+                        dot={{ r: 3, fill: '#22c55e' }}
+                        activeDot={{ r: 6 }}
+                        />
+                    </LineChart>
+                    </ResponsiveContainer>
+                )}
             </div>
           </div>
 
