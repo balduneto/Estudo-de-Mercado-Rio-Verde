@@ -48,8 +48,14 @@ const GlobalStyles = () => (
       width: 100%;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+      background-color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
-    /* Scrollbar personalizada para áreas internas */
+    /* Scrollbar personalizada */
+    .custom-scrollbar {
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 #f1f5f9;
+    }
     .custom-scrollbar::-webkit-scrollbar {
       height: 6px;
       width: 6px;
@@ -61,8 +67,9 @@ const GlobalStyles = () => (
       background: #cbd5e1; 
       border-radius: 3px;
     }
+    /* Garante que o Recharts não estoure o container */
     .recharts-wrapper {
-      width: 100% !important;
+      max-width: 100%;
     }
   `}</style>
 );
@@ -205,7 +212,7 @@ const SectionIntro = ({ title, icon: Icon, children, expertNote, interactiveType
 );
 
 const MainCard = ({ title, value, icon: Icon, subtext, tooltip }) => (
-  <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100 flex flex-col justify-between h-full relative group hover:shadow-md transition-shadow overflow-hidden w-full">
+  <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-100 flex flex-col justify-between h-full relative group hover:shadow-md transition-shadow overflow-hidden w-full box-border">
     <div className="flex items-start justify-between w-full">
       <div className="p-3 bg-indigo-50 rounded-lg shrink-0">
         <Icon className="w-5 h-5 md:w-6 md:h-6 text-indigo-600" />
@@ -213,7 +220,7 @@ const MainCard = ({ title, value, icon: Icon, subtext, tooltip }) => (
       {tooltip && (
         <div className="relative group/tooltip ml-2">
           <HelpCircle className="w-4 h-4 text-slate-300 cursor-help" />
-          <div className="absolute top-8 right-0 w-48 bg-slate-800 text-white text-[10px] p-3 rounded-lg hidden group-hover/block z-50 shadow-xl pointer-events-none leading-relaxed text-left">
+          <div className="absolute top-8 right-0 w-48 bg-slate-800 text-white text-[10px] p-3 rounded-lg hidden group-hover/block z-50 shadow-xl pointer-events-none leading-relaxed text-left border border-slate-200">
             {tooltip}
           </div>
         </div>
@@ -264,7 +271,10 @@ const BusinessSimulator = () => {
   });
 
   const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => setIsMounted(true), []);
+  
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
   
@@ -300,7 +310,7 @@ const BusinessSimulator = () => {
   ];
 
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-indigo-100 overflow-hidden mt-8 w-full max-w-full">
+    <div className="bg-white rounded-xl shadow-lg border border-indigo-100 overflow-hidden mt-8 w-full max-w-full box-border">
       <div className="bg-indigo-900 text-white p-5 flex items-center justify-between flex-wrap gap-2">
         <div>
           <h3 className="text-lg font-bold flex items-center gap-2">
@@ -331,7 +341,7 @@ const BusinessSimulator = () => {
         <div className="space-y-6 w-full min-w-0">
           
           {/* CAPEX */}
-          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 w-full">
+          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 w-full group focus-within:ring-2 focus-within:ring-indigo-500 transition-all">
             <div className="flex justify-between items-center mb-3">
               <div className="flex items-center gap-2">
                 <Target className="w-4 h-4 text-indigo-600" />
@@ -344,21 +354,25 @@ const BusinessSimulator = () => {
                 <div key={item.id} className="flex gap-2 items-center text-xs w-full">
                   <div className="flex-1 relative min-w-0">
                     <Edit3 className="w-3 h-3 text-slate-300 absolute left-2 top-2.5" />
+                    {/* Estilo inline para garantir fonte 16px no mobile e prevenir zoom */}
                     <input 
                       type="text" 
                       value={item.name} 
                       onChange={(e) => updateItem(setCapexItems, capexItems, item.id, 'name', e.target.value)}
-                      className="w-full border border-slate-300 rounded pl-7 pr-2 py-2 text-base sm:text-xs focus:ring-1 focus:ring-indigo-500 outline-none min-w-0 bg-white"
+                      className="w-full border border-slate-300 rounded pl-7 pr-2 py-2 focus:ring-1 focus:ring-indigo-500 outline-none min-w-0 bg-white"
+                      style={{ fontSize: '16px' }} 
                       placeholder="Nome do Item"
                     />
                   </div>
-                  <div className="relative w-24 sm:w-28 shrink-0 min-w-[80px]">
+                  {/* Min width inline para garantir estabilidade */}
+                  <div className="relative shrink-0" style={{ width: '100px' }}>
                     <span className="absolute left-2 top-2 text-slate-400">R$</span>
                     <input 
                       type="number" 
                       value={item.value} 
                       onChange={(e) => updateItem(setCapexItems, capexItems, item.id, 'value', e.target.value)}
-                      className="w-full pl-7 border border-slate-300 rounded px-2 py-2 text-base sm:text-xs text-right outline-none bg-white focus:ring-1 focus:ring-indigo-500"
+                      className="w-full pl-7 border border-slate-300 rounded px-2 py-2 text-right outline-none bg-white focus:ring-1 focus:ring-indigo-500"
+                      style={{ fontSize: '16px' }}
                     />
                   </div>
                   <button type="button" onClick={() => removeItem(setCapexItems, capexItems, item.id)} className="text-slate-400 hover:text-red-500 shrink-0"><Trash2 className="w-3 h-3" /></button>
@@ -371,7 +385,7 @@ const BusinessSimulator = () => {
           </div>
 
           {/* OPEX */}
-          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 w-full">
+          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 w-full group focus-within:ring-2 focus-within:ring-indigo-500 transition-all">
              <div className="flex justify-between items-center mb-3">
               <div className="flex items-center gap-2">
                 <RefreshCw className="w-4 h-4 text-orange-600" />
@@ -388,17 +402,19 @@ const BusinessSimulator = () => {
                       type="text" 
                       value={item.name} 
                       onChange={(e) => updateItem(setOpexItems, opexItems, item.id, 'name', e.target.value)}
-                      className="w-full border border-slate-300 rounded pl-7 pr-2 py-2 text-base sm:text-xs focus:ring-1 focus:ring-indigo-500 outline-none min-w-0 bg-white"
+                      className="w-full border border-slate-300 rounded pl-7 pr-2 py-2 focus:ring-1 focus:ring-indigo-500 outline-none min-w-0 bg-white"
+                      style={{ fontSize: '16px' }}
                       placeholder="Nome do Item"
                     />
                   </div>
-                  <div className="relative w-24 sm:w-28 shrink-0 min-w-[80px]">
+                  <div className="relative shrink-0" style={{ width: '100px' }}>
                     <span className="absolute left-2 top-2 text-slate-400">R$</span>
                     <input 
                       type="number" 
                       value={item.value} 
                       onChange={(e) => updateItem(setOpexItems, opexItems, item.id, 'value', e.target.value)}
-                      className="w-full pl-7 border border-slate-300 rounded px-2 py-2 text-base sm:text-xs text-right outline-none bg-white focus:ring-1 focus:ring-indigo-500"
+                      className="w-full pl-7 border border-slate-300 rounded px-2 py-2 text-right outline-none bg-white focus:ring-1 focus:ring-indigo-500"
+                      style={{ fontSize: '16px' }}
                     />
                   </div>
                   <button type="button" onClick={() => removeItem(setOpexItems, opexItems, item.id)} className="text-slate-400 hover:text-red-500 shrink-0"><Trash2 className="w-3 h-3" /></button>
@@ -408,7 +424,7 @@ const BusinessSimulator = () => {
           </div>
 
           {/* VARIÁVEIS DE VENDA */}
-          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 w-full">
+          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 w-full group focus-within:ring-2 focus-within:ring-indigo-500 transition-all">
              <div className="flex items-center gap-2 mb-3">
                 <TrendingUp className="w-4 h-4 text-green-600" />
                 <h4 className="text-sm font-bold text-slate-700 uppercase">Projeção de Vendas</h4>
@@ -422,7 +438,8 @@ const BusinessSimulator = () => {
                         type="number" 
                         value={revenue.avgTicket} 
                         onChange={(e) => setRevenue({...revenue, avgTicket: Number(e.target.value)})}
-                        className="w-full border border-slate-300 rounded pl-7 pr-2 py-2 text-base sm:text-sm bg-white focus:ring-1 focus:ring-indigo-500 outline-none"
+                        className="w-full border border-slate-300 rounded pl-7 pr-2 py-2 bg-white focus:ring-1 focus:ring-indigo-500 outline-none"
+                        style={{ fontSize: '16px' }}
                     />
                  </div>
                </div>
@@ -434,7 +451,8 @@ const BusinessSimulator = () => {
                         type="number" 
                         value={revenue.volume} 
                         onChange={(e) => setRevenue({...revenue, volume: Number(e.target.value)})}
-                        className="w-full border border-slate-300 rounded pl-7 pr-2 py-2 text-base sm:text-sm bg-white focus:ring-1 focus:ring-indigo-500 outline-none"
+                        className="w-full border border-slate-300 rounded pl-7 pr-2 py-2 bg-white focus:ring-1 focus:ring-indigo-500 outline-none"
+                        style={{ fontSize: '16px' }}
                     />
                   </div>
                </div>
@@ -446,7 +464,8 @@ const BusinessSimulator = () => {
                         type="number" 
                         value={revenue.variableCostPct} 
                         onChange={(e) => setRevenue({...revenue, variableCostPct: Number(e.target.value)})}
-                        className="w-full border border-slate-300 rounded pl-7 pr-2 py-2 text-base sm:text-sm bg-white focus:ring-1 focus:ring-indigo-500 outline-none"
+                        className="w-full border border-slate-300 rounded pl-7 pr-2 py-2 bg-white focus:ring-1 focus:ring-indigo-500 outline-none"
+                        style={{ fontSize: '16px' }}
                     />
                   </div>
                </div>
@@ -456,14 +475,14 @@ const BusinessSimulator = () => {
         </div>
 
         {/* COLUNA DIREITA: RESULTADOS */}
-        <div className="flex flex-col h-full bg-slate-50 rounded-xl border border-slate-200 p-4 md:p-6 w-full min-w-0">
+        <div className="flex flex-col h-full bg-slate-50 rounded-xl border border-slate-200 p-4 md:p-6 w-full min-w-0 box-border">
           <h4 className="text-sm font-bold text-slate-800 uppercase mb-4 flex items-center gap-2">
             <DollarSign className="w-4 h-4 text-emerald-600" />
             Demonstrativo de Resultados (DRE)
           </h4>
 
-          {/* Container do Gráfico: Abordagem Absoluta para Estabilidade */}
-          <div className="w-full mb-6 relative" style={{ height: 200 }}>
+          {/* Gráfico Simplificado com Container Estabilizado */}
+          <div className="w-full mb-6 relative" style={{ height: '220px' }}>
             {isMounted && (
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
                 <ResponsiveContainer width="100%" height="100%">
@@ -800,8 +819,8 @@ export default function RioVerdeMarketApp() {
             </p>
           </SectionIntro>
 
-          {/* Container do Gráfico: Abordagem Absoluta dentro de Relativo com Altura Fixa */}
-          <div className="w-full mt-6 relative" style={{ height: 300 }}>
+          {/* Container do Gráfico: Abordagem Absoluta dentro de Relativo com Altura Fixa via style */}
+          <div className="w-full mt-6 relative" style={{ height: '300px' }}>
             {isMounted && (
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
                 <ResponsiveContainer width="100%" height="100%">
